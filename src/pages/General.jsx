@@ -6,6 +6,7 @@ import ClassCounter from 'components/ClassCounter';
 import PostList from 'components/PostList';
 import MyButton from 'components/UI/button/MyButton';
 import MyInput from 'components/UI/input/MyInput';
+import { nanoid } from 'nanoid';
 
 const General = () => {
   const location = useLocation();
@@ -26,8 +27,18 @@ const General = () => {
   const addNewPost = e => {
     e.preventDefault();
     console.log(title);
-    console.log(descriptionInputRef.current.value)
-  }
+    console.log(descriptionInputRef.current.value);
+
+    const newPost = {
+      id: nanoid(),
+      title: title,
+      body: descriptionInputRef.current.value,
+    };
+
+    console.log(newPost)
+
+    setPosts(prev => ([ ...prev, newPost ]));
+  };
 
   return (
     <main>
@@ -58,10 +69,21 @@ const General = () => {
             alignItems: 'flex-start',
           }}
         >
-          <MyInput value={title} onChange={e => setTitle(e.target.value)} type="text" placeholder="Name of post" />
+          <MyInput
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            type="text"
+            placeholder="Name of post"
+          />
           {/* <input ref={descriptionInputRef} type="text" placeholder="Description of post" /> */}
-          <MyInput ref={descriptionInputRef} type="text" placeholder="Description of post" />
-          <MyButton type="submit" onClick={addNewPost}>Create a post</MyButton>
+          <MyInput
+            ref={descriptionInputRef}
+            type="text"
+            placeholder="Description of post"
+          />
+          <MyButton type="submit" onClick={addNewPost}>
+            Create a post
+          </MyButton>
         </form>
       </div>
 
