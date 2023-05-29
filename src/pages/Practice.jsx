@@ -13,8 +13,8 @@ const Practice = () => {
           </Link>
         </li>
         <li>
-          <Link to="form" state={{ from: location }}>
-            Form
+          <Link to="about" state={{ from: location }}>
+            About
           </Link>
         </li>
       </ul>

@@ -13,11 +13,11 @@ const StyledLink = styled(Link)`
   text-transform: uppercase;
 
   :hover {
-    color: #1721d5;
+    color: #04b3de;
   }
 `;
 
-export const BackLink = ({ to, children }) => {
+const BackLink = ({ to, children }) => {
   return (
     <StyledLink to={to}>
       <HiArrowLeft size="24" />
@@ -25,3 +25,5 @@ export const BackLink = ({ to, children }) => {
     </StyledLink>
   );
 };
+
+export default BackLink;
