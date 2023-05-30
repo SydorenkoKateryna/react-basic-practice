@@ -6,8 +6,10 @@ import ClassCounter from 'components/ClassCounter';
 import PostList from 'components/PostList';
 import PostForm from 'components/PostForm';
 import PostFilter from 'components/PostFilter';
+import MyModal from 'components/UI/modal/MyModal';
 // import MySelect from 'components/UI/select/MySelect';
 // import MyInput from 'components/UI/input/MyInput';
+import MyButton from 'components/UI/button/MyButton';
 
 const General = () => {
   const location = useLocation();
@@ -17,28 +19,12 @@ const General = () => {
     { id: 1, title: 'JS 1', body: 'Description' },
     { id: 2, title: 'JS 2', body: 'Description' },
     { id: 3, title: 'JS 3', body: 'Description' },
-    { id: 4, title: 'JS 4', body: 'Description' },
-    { id: 5, title: 'JS 5', body: 'Description' },
   ]);
 
-  // const [selectedSort, setSelectedSort] = useState('');
-  // const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState({ sort: '', query: '' });
-
-  // const sortedPosts = useMemo(() => {
-  //   console.log('Sorted Fn worked');
-
-  //   if (selectedSort) {
-  //     return [...posts].sort((a, b) =>
-  //       a[selectedSort].localeCompare(b[selectedSort])
-  //     );
-  //   }
-  //   return posts;
-  // }, [posts, selectedSort]);
+  const [isModalVisble, setIsModalVisible] = useState(false);
 
   const sortedPosts = useMemo(() => {
-    console.log('Sorted Fn worked');
-
     if (filter.sort) {
       return [...posts].sort((a, b) =>
         a[filter.sort].localeCompare(b[filter.sort])
@@ -47,27 +33,20 @@ const General = () => {
     return posts;
   }, [posts, filter.sort]);
 
-  // const sortedAndSearchedPosts = useMemo(() => {
-  //   return sortedPosts.filter(post =>
-  //     post.title.toLowerCase().includes(searchQuery.toLowerCase())
-  //   );
-  // }, [searchQuery, sortedPosts]);
-
   const sortedAndSearchedPosts = useMemo(() => {
     return sortedPosts.filter(post =>
       post.title.toLowerCase().includes(filter.query.toLowerCase())
     );
   }, [filter.query, sortedPosts]);
 
-  const createPost = newPost => [setPosts(prev => [...prev, newPost])];
+  const createPost = newPost => {
+    setPosts(prev => [...prev, newPost]);
+    setIsModalVisible(false);
+  };
 
   const removePost = id => {
     setPosts(posts.filter(post => post.id !== id));
   };
-
-  // const sortPosts = sort => {
-  //   setSelectedSort(sort);
-  // };
 
   return (
     <main>
@@ -90,7 +69,10 @@ const General = () => {
 
       <div>
         <h2>Form</h2>
-        <PostForm create={createPost} />
+
+        <MyButton onClick={() => setIsModalVisible(true)}>
+          Create a post
+        </MyButton>
 
         <hr style={{ margin: '15px 0' }} />
 
@@ -102,6 +84,10 @@ const General = () => {
         posts={sortedAndSearchedPosts}
         title="List of posts"
       />
+
+      <MyModal visible={isModalVisble} setVisible={setIsModalVisible}>
+        <PostForm create={createPost} />
+      </MyModal>
     </main>
   );
 };

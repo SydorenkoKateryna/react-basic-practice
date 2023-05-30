@@ -41,7 +41,7 @@ const PostForm = ({ create }) => {
         placeholder="Description of post"
       />
       <MyButton type="submit" onClick={addNewPost}>
-        Create a post
+        Create
       </MyButton>
     </form>
   );
