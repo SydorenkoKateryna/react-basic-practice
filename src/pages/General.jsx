@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect, useRef } from 'react';
+// import { Suspense, useState, useEffect } from 'react';
 import { usePosts } from 'components/hooks/usePosts';
 import BackLink from 'components/BackLink';
 import Counter from 'components/Counter';
@@ -9,22 +10,61 @@ import PostForm from 'components/PostForm';
 import PostFilter from 'components/PostFilter';
 import MyModal from 'components/UI/modal/MyModal';
 import MyButton from 'components/UI/button/MyButton';
+import Loader from 'components/UI/loader/Loader';
+import PostService from 'API/PostService';
+import { useFetching } from 'components/hooks/useFetching';
 
 const General = () => {
   const location = useLocation();
   const backLinkHref = location.state?.from ?? '/practice';
 
-  const [posts, setPosts] = useState([]);
+  const isFirstRender = useRef(true);
 
+  const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [isModalVisble, setIsModalVisible] = useState(false);
+  // const [isPostsLoading, setIsPostsLoading] = useState(false);
+  const [fetchPosts, isPostsLoading] = useFetching(async () => {
+    const posts = await PostService.getAll();
+    setPosts(posts);
+  });
 
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+
+  // useEffect(() => {
+  //   if (posts.length === 0) {    
+  //     return;
+  //   }
+
+  //   // if (isFirstRender.current) {
+  //   //   isFirstRender.current = false;
+  //   //   return;
+  //   // }
+
+  //   fetchPosts();
+  // }, [fetchPosts, posts.length]);
+
+  useEffect(() => {
+
+    if (!isFirstRender.current) {
+      fetchPosts();
+    } 
+
+    // isFirstRender.current = false;
+
+  }, [fetchPosts]);
 
   const createPost = newPost => {
     setPosts(prev => [...prev, newPost]);
     setIsModalVisible(false);
   };
+
+  // async function fetchPosts() {
+  //   setIsPostsLoading(true);
+  //   // const posts = await PostService.getAll();
+  //   // setPosts(posts);
+  //   setIsPostsLoading(false);
+  // }
 
   const removePost = id => {
     setPosts(posts.filter(post => post.id !== id));
@@ -51,6 +91,7 @@ const General = () => {
 
       <div>
         <h2>Form</h2>
+
         <MyButton onClick={() => setIsModalVisible(true)}>
           Create a post
         </MyButton>
@@ -58,11 +99,25 @@ const General = () => {
         <PostFilter filter={filter} setFilter={setFilter} />
       </div>
 
-      <PostList
-        remove={removePost}
-        posts={sortedAndSearchedPosts}
-        title="List of posts"
-      />
+      {/* {postError && <b>There are an error</b>} */}
+
+      {isPostsLoading ? (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '50px',
+          }}
+        >
+          <Loader />
+        </div>
+      ) : (
+        <PostList
+          remove={removePost}
+          posts={sortedAndSearchedPosts}
+          title="List of posts"
+        />
+      )}
 
       <MyModal visible={isModalVisble} setVisible={setIsModalVisible}>
         <PostForm create={createPost} />
