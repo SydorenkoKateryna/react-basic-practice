@@ -1,12 +1,14 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Suspense, useRef, useState } from 'react';
+import { Suspense, useState } from 'react';
 import BackLink from 'components/BackLink';
 import Counter from 'components/Counter';
 import ClassCounter from 'components/ClassCounter';
 import PostList from 'components/PostList';
-import MyButton from 'components/UI/button/MyButton';
-import MyInput from 'components/UI/input/MyInput';
-import { nanoid } from 'nanoid';
+import PostForm from 'components/PostForm';
+import MySelect from 'components/UI/select/MySelect';
+// import MyButton from 'components/UI/button/MyButton';
+// import MyInput from 'components/UI/input/MyInput';
+// import { nanoid } from 'nanoid';
 
 const General = () => {
   const location = useLocation();
@@ -20,24 +22,54 @@ const General = () => {
     { id: 5, title: 'JS 5', body: 'Description' },
   ]);
 
-  const [title, setTitle] = useState('');
+  const [selectedSort, setSelectedSort] = useState('');
 
-  const descriptionInputRef = useRef();
+  // 3v
+  const createPost = newPost => [setPosts(prev => [...prev, newPost])];
 
-  const addNewPost = e => {
-    e.preventDefault();
-    console.log(title);
-    console.log(descriptionInputRef.current.value);
+  // 1v
+  // const [title, setTitle] = useState('');
+  // 1.1v
+  // const [body, setBody] = useState('');
+  // 1.2v
+  // const descriptionInputRef = useRef();
 
-    const newPost = {
-      id: nanoid(),
-      title: title,
-      body: descriptionInputRef.current.value,
-    };
+  // const addNewPost = e => {
+  //   e.preventDefault();
 
-    console.log(newPost)
+  //   const newPost = {
+  //     id: nanoid(),
+  //     title,
+  //     // body: descriptionInputRef.current.value,
+  //     body,
+  //   };
 
-    setPosts(prev => ([ ...prev, newPost ]));
+  //   setPosts(prev => [...prev, newPost]);
+
+  //   setTitle('');
+  //   setBody('');
+  // };
+
+  // 2v
+  // const [post, setPost] = useState({ title: '', body: '' });
+
+  // const addNewPost = e => {
+  //   e.preventDefault();
+
+  //   setPosts(prev => [...prev, { ...post, id: nanoid() }]);
+
+  //   setPost({ title: '', body: '' });
+  // };
+
+  const removePost = id => {
+    setPosts(posts.filter(post => post.id !== id));
+  };
+
+  const sortPosts = sort => {
+    setSelectedSort(sort);
+    console.log(sort);
+
+    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])));
   };
 
   return (
@@ -61,33 +93,32 @@ const General = () => {
 
       <div>
         <h2>Form</h2>
-        <form
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            maxWidth: '600px',
-            alignItems: 'flex-start',
-          }}
-        >
-          <MyInput
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            type="text"
-            placeholder="Name of post"
-          />
-          {/* <input ref={descriptionInputRef} type="text" placeholder="Description of post" /> */}
-          <MyInput
-            ref={descriptionInputRef}
-            type="text"
-            placeholder="Description of post"
-          />
-          <MyButton type="submit" onClick={addNewPost}>
-            Create a post
-          </MyButton>
-        </form>
+        <PostForm create={createPost} />
       </div>
 
-      <PostList posts={posts} title="List of posts" />
+      <hr style={{ margin: '15px 0' }} />
+
+      <div>
+        {/* <select>
+          <option value="value1">By title</option>
+          <option value="value2">By description</option>
+        </select> */}
+        <MySelect
+          value={selectedSort}
+          handleSortValueChange={sortPosts}
+          defaultValue="Sort by:"
+          options={[
+            { value: 'title', name: 'Title' },
+            { value: 'body', name: 'Description' },
+          ]}
+        />
+      </div>
+
+      {posts.length !== 0 ? (
+        <PostList remove={removePost} posts={posts} title="List of posts" />
+      ) : (
+        <h2 style={{ textAlign: 'center' }}>There are no posts yet...</h2>
+      )}
     </main>
   );
 };

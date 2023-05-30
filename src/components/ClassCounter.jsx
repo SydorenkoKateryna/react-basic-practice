@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import '../styles/Counter.css';
 
 class ClassCounter extends Component {
   state = {
@@ -19,8 +20,14 @@ class ClassCounter extends Component {
     return (
       <div>
         <h3>{this.state.count}</h3>
-        <button onClick={this.handleIncrement}>Increment</button>
-        <button onClick={this.handleDecrement}>Decrement</button>
+        <div className="counter-btn-wrapper">
+          <button className="counter-btn" onClick={this.handleIncrement}>
+            Increment
+          </button>
+          <button className="counter-btn" onClick={this.handleDecrement}>
+            Decrement
+          </button>
+        </div>
       </div>
     );
   }

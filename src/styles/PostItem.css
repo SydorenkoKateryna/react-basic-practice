@@ -1,16 +1,8 @@
 .post {
-    display: flex;
-    margin-top: 20px;
-    padding: 20px;
-    border: 2px dashed black;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.post__content {
-
-}
-
-.post__btn {
-
+  display: flex;
+  margin-top: 20px;
+  padding: 20px;
+  border: 2px dashed black;
+  justify-content: space-between;
+  align-items: center;
 }
