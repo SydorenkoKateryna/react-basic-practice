@@ -1,6 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Suspense, useState, useEffect, useRef } from 'react';
-// import { Suspense, useState, useEffect } from 'react';
 import { usePosts } from 'components/hooks/usePosts';
 import BackLink from 'components/BackLink';
 import Counter from 'components/Counter';
@@ -17,13 +16,12 @@ import { useFetching } from 'components/hooks/useFetching';
 const General = () => {
   const location = useLocation();
   const backLinkHref = location.state?.from ?? '/practice';
-
-  const isFirstRender = useRef(true);
+  const mounted = useRef(true);
 
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({ sort: '', query: '' });
   const [isModalVisble, setIsModalVisible] = useState(false);
-  // const [isPostsLoading, setIsPostsLoading] = useState(false);
+
   const [fetchPosts, isPostsLoading] = useFetching(async () => {
     const posts = await PostService.getAll();
     setPosts(posts);
@@ -31,40 +29,24 @@ const General = () => {
 
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
 
-  // useEffect(() => {
-  //   if (posts.length === 0) {    
-  //     return;
-  //   }
-
-  //   // if (isFirstRender.current) {
-  //   //   isFirstRender.current = false;
-  //   //   return;
-  //   // }
-
-  //   fetchPosts();
-  // }, [fetchPosts, posts.length]);
-
   useEffect(() => {
+    mounted.current = true;
 
-    if (!isFirstRender.current) {
+    if (posts.length) {
+      return;
+    }
+
+    if (mounted.current) {
       fetchPosts();
-    } 
+    }
 
-    // isFirstRender.current = false;
-
-  }, [fetchPosts]);
+    return () => (mounted.current = false);
+  }, [fetchPosts, posts.length]);
 
   const createPost = newPost => {
     setPosts(prev => [...prev, newPost]);
     setIsModalVisible(false);
   };
-
-  // async function fetchPosts() {
-  //   setIsPostsLoading(true);
-  //   // const posts = await PostService.getAll();
-  //   // setPosts(posts);
-  //   setIsPostsLoading(false);
-  // }
 
   const removePost = id => {
     setPosts(posts.filter(post => post.id !== id));
